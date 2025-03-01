@@ -32,9 +32,16 @@ with DAG(
     task_hello_python = PythonOperator(
         task_id ='hello_python',
         python_callable = print_hello_python
+    )
 
-    PythonOperator
-    BashOperator
+    #Task 3: Another Bash Task
+    task_bye_bash = BashOperator (
+        task_id='bye_bash',
+        bash_command='echo' "Goodbye!"'
+    )
+
+    # Define task dependencies (order of execution)
+    task_hello_bash >> task_hello_python >> task_bye_bash
 
     
     
