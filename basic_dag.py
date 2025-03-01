@@ -12,3 +12,7 @@ default_args = {
 }
 
 # Define the DAG
+with DAG(
+    'basic_example_dag',
+    default_args=default_args,
+    
