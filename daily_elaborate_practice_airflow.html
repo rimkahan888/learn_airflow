@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airflow DAG Memory Game</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .code-container {
+            background-color: #282c34;
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            white-space: pre;
+            overflow-x: auto;
+        }
+        .blank {
+            display: inline-block;
+            min-width: 60px;
+            height: 20px;
+            margin: 0 5px;
+            background-color: #4b5263;
+            border-radius: 3px;
+            text-align: center;
+            line-height: 20px;
+            padding: 2px 5px;
+            vertical-align: middle;
+        }
+        .blank-highlight {
+            box-shadow: 0 0 0 2px #61afef;
+        }
+        .keyword-box {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            background-color: #e1e1e1;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .keyword {
+            background-color: #61afef;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: grab;
+            font-weight: bold;
+            user-select: none;
+            touch-action: none;
+        }
+        .keyword.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+        }
+        .used {
+            background-color: #5c6370;
+            cursor: not-allowed;
+        }
+        button {
+            background-color: #98c379;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .correct {
+            background-color: #98c379;
+            color: white;
+        }
+        .incorrect {
+            background-color: #e06c75;
+            color: white;
+        }
+        h2 {
+            color: #4b5263;
+        }
+        .hint-box {
+            background-color: #282c34;
+            color: #e5c07b;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 20px;
+            display: none;
+        }
+        .score-display {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .score-correct {
+            color: #98c379;
+        }
+        .score-total {
+            color: #61afef;
+        }
+    </style>
+</head>
+<body>
+    <h1>Airflow DAG Memory Game</h1>
+    <p>Drag and drop the keywords into the correct blank spaces in the code. Correct answers will turn green immediately!</p>
+    
+    <div class="score-display">
+        Correct: <span id="scoreCorrect" class="score-correct">0</span> / <span id="scoreTotal" class="score-total">0</span>
+    </div>
+    
+    <div class="keyword-box" id="keywordBox">
+        <!-- Keywords will be added here dynamically -->
+    </div>
+    
+    <button id="resetBtn">Reset Game</button>
+    <button id="hintBtn">Show Hint</button>
+    
+    <div class="code-container" id="codeContainer">
+from <span class="blank" data-answer="airflow">_____</span> import <span class="blank" data-answer="DAG">___</span>
+from <span class="blank" data-answer="airflow.operators.bash">___________________</span> import <span class="blank" data-answer="BashOperator">____________</span>
+from <span class="blank" data-answer="airflow.operators.python">_____________________</span> import <span class="blank" data-answer="PythonOperator">______________</span>
+from <span class="blank" data-answer="datetime">________</span> import datetime, <span class="blank" data-answer="timedelta">_________</span>
+
+args = {
+    '<span class="blank" data-answer="owner">_____</span>': 'me',
+    '<span class="blank" data-answer="start_date">__________</span>': datetime(2023, 1, 1),
+    '<span class="blank" data-answer="retries">_______</span>': 1,
+    '<span class="blank" data-answer="retry_delay">___________</span>': timedelta(minutes=1),
+}
+
+<span class="blank" data-answer="with">____</span> DAG(
+    'simple_dag',
+    default_args=args,
+    <span class="blank" data-answer="description">___________</span>='Simple DAG',
+    <span class="blank" data-answer="schedule_interval">________________</span>=timedelta(days=1),
+    <span class="blank" data-answer="catchup">_______</span>=False,
+) <span class="blank" data-answer="as">__</span> dag:
+    t1 = <span class="blank" data-answer="BashOperator">____________</span>(
+        <span class="blank" data-answer="task_id">_______</span>='t1',
+        <span class="blank" data-answer="bash_command">____________</span>='echo "Hello"'
+    )
+    
+    <span class="blank" data-answer="def">___</span> fn():
+        <span class="blank" data-answer="print">_____</span>("Hi")
+    
+    t2 = <span class="blank" data-answer="PythonOperator">______________</span>(
+        <span class="blank" data-answer="task_id">_______</span>='t2',
+        <span class="blank" data-answer="python_callable">_______________</span>=fn
+    )
+    
+    t3 = BashOperator(
+        task_id='t3',
+        bash_command='echo "Bye"'
+    )
+    
+    t1 <span class="blank" data-answer=">>">__</span> t2 <span class="blank" data-answer=">>">__</span> t3
+    </div>
+
+    <div class="hint-box" id="hintBox">
+        <h3>Hints:</h3>
+        <ul>
+            <li>Remember to import the correct operators for bash and python</li>
+            <li>A DAG requires owner, start_date, retries, and retry_delay</li>
+            <li>Use "with" to create a context manager for the DAG</li>
+            <li>Task dependencies are set with the ">>" operator</li>
+        </ul>
+    </div>
+
+    <script>
+        const keywords = [
+            'airflow', 'DAG', 'airflow.operators.bash', 'BashOperator', 
+            'airflow.operators.python', 'PythonOperator', 'datetime', 'timedelta',
+            'owner', 'start_date', 'retries', 'retry_delay', 'description',
+            'schedule_interval', 'catchup', 'with', 'as', 'task_id',
+            'bash_command', 'python_callable', 'def', 'print', '>>'
+        ];
+        
+        const keywordBox = document.getElementById('keywordBox');
+        const codeContainer = document.getElementById('codeContainer');
+        const resetBtn = document.getElementById('resetBtn');
+        const hintBtn = document.getElementById('hintBtn');
+        const hintBox = document.getElementById('hintBox');
+        const blanks = document.querySelectorAll('.blank');
+        const scoreCorrect = document.getElementById('scoreCorrect');
+        const scoreTotal = document.getElementById('scoreTotal');
+        
+        let draggedElement = null;
+        let correctCount = 0;
+        
+        // Set total score
+        scoreTotal.textContent = blanks.length;
+        
+        // Populate keyword box
+        keywords.forEach(keyword => {
+            const keywordEl = document.createElement('div');
+            keywordEl.className = 'keyword';
+            keywordEl.textContent = keyword;
+            keywordEl.dataset.keyword = keyword;
+            keywordEl.draggable = true;
+            
+            keywordEl.addEventListener('dragstart', (e) => {
+                if (keywordEl.classList.contains('used')) {
+                    e.preventDefault();
+                    return;
+                }
+                draggedElement = keywordEl;
+                keywordEl.classList.add('dragging');
+                // For mobile support
+                e.dataTransfer.setData('text/plain', keyword);
+            });
+            
+            keywordEl.addEventListener('dragend', () => {
+                keywordEl.classList.remove('dragging');
+            });
+            
+            keywordBox.appendChild(keywordEl);
+        });
+        
+        // Add event listeners to blanks
+        blanks.forEach(blank => {
+            blank.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                blank.classList.add('blank-highlight');
+            });
+            
+            blank.addEventListener('dragleave', () => {
+                blank.classList.remove('blank-highlight');
+            });
+            
+            blank.addEventListener('drop', (e) => {
+                e.preventDefault();
+                blank.classList.remove('blank-highlight');
+                
+                if (!draggedElement) return;
+                
+                const keyword = draggedElement.dataset.keyword;
+                
+                // If blank already has a keyword, return it to the pool
+                if (blank.dataset.filled) {
+                    const previousKeyword = blank.dataset.filled;
+                    const prevKeywordEl = Array.from(keywordBox.children).find(
+                        k => k.dataset.keyword === previousKeyword
+                    );
+                    if (prevKeywordEl) {
+                        prevKeywordEl.classList.remove('used');
+                    }
+                    
+                    // If it was correct before, decrement the score
+                    if (blank.classList.contains('correct')) {
+                        correctCount--;
+                        scoreCorrect.textContent = correctCount;
+                    }
+                }
+                
+                // Fill the blank with the keyword
+                blank.textContent = keyword;
+                blank.dataset.filled = keyword;
+                draggedElement.classList.add('used');
+                
+                // Check if correct
+                if (keyword === blank.dataset.answer) {
+                    blank.classList.add('correct');
+                    blank.classList.remove('incorrect');
+                    correctCount++;
+                    scoreCorrect.textContent = correctCount;
+                    
+                    // Check if all correct
+                    if (correctCount === blanks.length) {
+                        setTimeout(() => {
+                            alert('Congratulations! You have completed the exercise!');
+                        }, 500);
+                    }
+                } else {
+                    blank.classList.add('incorrect');
+                    blank.classList.remove('correct');
+                }
+                
+                draggedElement = null;
+            });
+        });
+        
+        // For mobile/touch support
+        blanks.forEach(blank => {
+            blank.addEventListener('click', () => {
+                blanks.forEach(b => b.classList.remove('blank-highlight'));
+                blank.classList.add('blank-highlight');
+            });
+        });
+        
+        document.querySelectorAll('.keyword').forEach(keyword => {
+            keyword.addEventListener('click', () => {
+                if (keyword.classList.contains('used')) return;
+                
+                const highlightedBlank = document.querySelector('.blank-highlight');
+                if (highlightedBlank) {
+                    // Simulate a drop event
+                    draggedElement = keyword;
+                    const dropEvent = new Event('drop');
+                    highlightedBlank.dispatchEvent(dropEvent);
+                    highlightedBlank.classList.remove('blank-highlight');
+                }
+            });
+        });
+        
+        // Reset button
+        resetBtn.addEventListener('click', () => {
+            blanks.forEach(blank => {
+                blank.textContent = '_____';
+                blank.classList.remove('correct', 'incorrect', 'blank-highlight');
+                delete blank.dataset.filled;
+            });
+            
+            Array.from(keywordBox.children).forEach(keyword => {
+                keyword.classList.remove('used');
+            });
+            
+            correctCount = 0;
+            scoreCorrect.textContent = correctCount;
+        });
+        
+        // Hint button
+        hintBtn.addEventListener('click', () => {
+            if (hintBox.style.display === 'block') {
+                hintBox.style.display = 'none';
+                hintBtn.textContent = 'Show Hint';
+            } else {
+                hintBox.style.display = 'block';
+                hintBtn.textContent = 'Hide Hint';
+            }
+        });
+    </script>
+</body>
+</html>
