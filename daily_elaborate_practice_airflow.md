@@ -1,5 +1,7 @@
 # Airflow DAG Memory Game
 
+![Airflow DAG Memory Game](./images/image.png)
+
 ## Overview
 This interactive memory game helps you practice and memorize the syntax for creating Directed Acyclic Graphs (DAGs) in Apache Airflow. By dragging and dropping keywords into the correct blank spaces in the code, you'll build muscle memory for Airflow's structure and syntax.
 
@@ -30,4 +32,3 @@ After mastering this basic DAG structure:
 - Try creating more complex workflows with multiple dependencies
 - Experiment with different operators
 - Explore more advanced Airflow features like XComs, Sensors, and Hooks
-
