@@ -32,3 +32,12 @@ After mastering this basic DAG structure:
 - Try creating more complex workflows with multiple dependencies
 - Experiment with different operators
 - Explore more advanced Airflow features like XComs, Sensors, and Hooks
+
+
+
+**Project Title:** Interactive Learning Memory Game Template
+
+**Project Description:**
+- Developed an interactive drag-and-drop game using HTML, CSS, and JavaScript, boosting user engagement by 30%.
+- Implemented real-time scoring and instant feedback for immediate performance tracking.
+- Designed a scalable, adaptable template piloted with over 50 users across diverse subjects.
