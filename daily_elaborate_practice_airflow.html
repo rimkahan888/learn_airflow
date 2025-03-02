@@ -60,10 +60,6 @@
             opacity: 0.5;
             cursor: grabbing;
         }
-        .used {
-            background-color: #5c6370;
-            cursor: not-allowed;
-        }
         button {
             background-color: #98c379;
             color: white;
@@ -92,6 +88,7 @@
             border-radius: 5px;
             margin-top: 20px;
             display: none;
+            overflow-x: auto;
         }
         .score-display {
             font-size: 18px;
@@ -103,6 +100,10 @@
         }
         .score-total {
             color: #61afef;
+        }
+        .reference-code {
+            white-space: pre;
+            font-family: 'Courier New', monospace;
         }
     </style>
 </head>
@@ -163,7 +164,47 @@ args = {
     </div>
 
     <div class="hint-box" id="hintBox">
-        <h3>Hints:</h3>
+        <h3>Complete Reference Code:</h3>
+        <div class="reference-code">from airflow import DAG
+from airflow.operators.bash import BashOperator
+from airflow.operators.python import PythonOperator
+from datetime import datetime, timedelta
+
+args = {
+    'owner': 'me',
+    'start_date': datetime(2023, 1, 1),
+    'retries': 1,
+    'retry_delay': timedelta(minutes=1),
+}
+
+with DAG(
+    'simple_dag',
+    default_args=args,
+    description='Simple DAG',
+    schedule_interval=timedelta(days=1),
+    catchup=False,
+) as dag:
+    t1 = BashOperator(
+        task_id='t1',
+        bash_command='echo "Hello"'
+    )
+    
+    def fn():
+        print("Hi")
+    
+    t2 = PythonOperator(
+        task_id='t2',
+        python_callable=fn
+    )
+    
+    t3 = BashOperator(
+        task_id='t3',
+        bash_command='echo "Bye"'
+    )
+    
+    t1 >> t2 >> t3</div>
+        
+        <h3>Tips:</h3>
         <ul>
             <li>Remember to import the correct operators for bash and python</li>
             <li>A DAG requires owner, start_date, retries, and retry_delay</li>
@@ -205,10 +246,6 @@ args = {
             keywordEl.draggable = true;
             
             keywordEl.addEventListener('dragstart', (e) => {
-                if (keywordEl.classList.contains('used')) {
-                    e.preventDefault();
-                    return;
-                }
                 draggedElement = keywordEl;
                 keywordEl.classList.add('dragging');
                 // For mobile support
@@ -244,12 +281,7 @@ args = {
                 // If blank already has a keyword, return it to the pool
                 if (blank.dataset.filled) {
                     const previousKeyword = blank.dataset.filled;
-                    const prevKeywordEl = Array.from(keywordBox.children).find(
-                        k => k.dataset.keyword === previousKeyword
-                    );
-                    if (prevKeywordEl) {
-                        prevKeywordEl.classList.remove('used');
-                    }
+                    // Note: We removed the code that would mark the keyword as "used"
                     
                     // If it was correct before, decrement the score
                     if (blank.classList.contains('correct')) {
@@ -261,7 +293,7 @@ args = {
                 // Fill the blank with the keyword
                 blank.textContent = keyword;
                 blank.dataset.filled = keyword;
-                draggedElement.classList.add('used');
+                // Removed: draggedElement.classList.add('used');
                 
                 // Check if correct
                 if (keyword === blank.dataset.answer) {
@@ -295,7 +327,7 @@ args = {
         
         document.querySelectorAll('.keyword').forEach(keyword => {
             keyword.addEventListener('click', () => {
-                if (keyword.classList.contains('used')) return;
+                // Removed: if (keyword.classList.contains('used')) return;
                 
                 const highlightedBlank = document.querySelector('.blank-highlight');
                 if (highlightedBlank) {
@@ -316,9 +348,7 @@ args = {
                 delete blank.dataset.filled;
             });
             
-            Array.from(keywordBox.children).forEach(keyword => {
-                keyword.classList.remove('used');
-            });
+            // Removed: code that would reset the "used" class on keywords
             
             correctCount = 0;
             scoreCorrect.textContent = correctCount;
